@@ -1,8 +1,10 @@
 "use client"
 import { useState } from "react"
+import { signIn } from "next-auth/react"
 
 type Props = {
-    className?: string
+    className?: string,
+    callBackUrl? : string
 }
 
 const LogIn = (props: Props) => {
@@ -17,6 +19,17 @@ const LogIn = (props: Props) => {
     setPassword(event.target.value)
   }
 
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      await signIn('credentials', {
+        username: username,
+        password: password,
+        redirect: true,
+        callbackUrl: props.callBackUrl ?? "http://localhost:3000"
+      })
+  }
+
 
   return (
     <div className={props.className}>
@@ -24,14 +37,14 @@ const LogIn = (props: Props) => {
         LogIn Form
       </div>
 
-      <form className="p-2 flex flex-col gap-3">
+      <form onSubmit={onSubmit} className="p-2 flex flex-col gap-3">
         <label htmlFor="username">Username</label>
         <input type="text" placeholder="Username" value={username} onChange={handleChangeUsername} />
 
         <label htmlFor="password">Username</label>
         <input type="password" id="password" placeholder="Password" value={password} onChange={handleChangePassword} />
 
-        <button type="submit" className="w-28">
+        <button type="submit" className="w-28" >
           SignIn
         </button>
       </form>
@@ -39,4 +52,5 @@ const LogIn = (props: Props) => {
     </div>
   )
 }
+
 export default LogIn
