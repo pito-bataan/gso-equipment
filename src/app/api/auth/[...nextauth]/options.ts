@@ -83,4 +83,10 @@ export const options: NextAuthOptions = {
       return token
     } 
   }
+  , 
+  pages:{
+    signIn: '/api/auth/login',
+    error: 'api/auth/error'
+  },
+
 }

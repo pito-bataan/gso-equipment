@@ -1,6 +1,4 @@
 const Equipments = () => {
-  return (
-    <div>Equipments</div>
-  )
-}
-export default Equipments
+  return <div className="">(Equipments Table)</div>;
+};
+export default Equipments;

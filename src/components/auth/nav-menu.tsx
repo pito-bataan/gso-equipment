@@ -1,70 +1,101 @@
-'use client';
-import Link from 'next/link';
-import { signIn, signOut, useSession } from 'next-auth/react';
+"use client";
+import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
+import SignOut from "./sign-out";
+import { usePathname } from "next/navigation";
+import React from "react";
+import { useActivePath } from "@/app/helper";
 
-function SideNav() {
+const NavMenu = () => {
   const { data: session } = useSession();
+  const checkActivePath = useActivePath();
 
-  if (session && session.user?.name === 'admin') {
+  type NavigationItem = {
+    href: string;
+    name: string;
+    icon?: string;
+  };  
+
+  const NavMenu: NavigationItem[] = [
+    { href: "/dashboard", name: "Dashboard", icon: "dashboard.svg" },
+    { href: "/equipments", name: "Equipments", icon: "equipments.svg" },
+    { href: "/users", name: "Users", icon: "users.svg" },
+  ];
+
+  if (session && session.user?.role === "ADMIN") {
     return (
-      <div className="min-h-screen flex flex-row bg-gray-100">
-        <div className="flex flex-col w-56 bg-white rounded-r-3xl overflow-hidden">
-          <div className="flex items-center justify-center h-20 shadow-md">
-            <h1 className="text-3xl uppercase text-indigo-500">Admin</h1>
+      <div className="flex flex-row sm:gap-10">
+        <div className="sm:w-full sm:max-w-[18rem]">
+          <input
+            type="checkbox"
+            id="sidebar-mobile-fixed"
+            className="sidebar-state"
+          />
+          <label
+            htmlFor="sidebar-mobile-fixed"
+            className="sidebar-overlay"
+          ></label>
+          <aside className="sidebar sidebar-fixed-left sidebar-mobile h-full justify-start max-sm:fixed max-sm:-translate-x-full bg-slate-200">
+            <section className="sidebar-title items-center p-5">
+              <img src="login-logo.svg" alt="logo" width="42" />
+              <div className="flex flex-col">
+                <span className=" text-slate-800 font-bold">ADMIN</span>
+                <span className="text-xs font-normal text-slate-500">Test</span>
+              </div>
+            </section>
+            <section className="sidebar-content">
+              <nav className="menu rounded-md">
+                <section className="menu-section px-4">
+                  <span className="menu-title text-slate-800">Main menu</span>
+                  <ul className="menu-items">
+                    {NavMenu.map(({ href, name, icon }) => (
+                      <Link
+                        href={href}
+                        className={
+                          checkActivePath(href)
+                            ? "bg-blue-200 rounded-md active"
+                            : ""
+                        }
+                      >
+                        <li
+                          key={href}
+                          className="menu-item text-slate-800 font-bold hover:bg-slate-300"
+                        >
+                          <img src={icon} alt="" width={20} />
+                          <span>{name}</span>
+                        </li>
+                      </Link>
+                    ))}
+
+                    {/* signOut */}
+                    <a href="#">
+                      <li className="menu-item  text-slate-800 font-bold hover:bg-slate-300">
+                        <img src="signout.svg" alt="" width={20} />
+                        <SignOut />
+                      </li>
+                    </a>
+                  </ul>
+                </section>
+                <div className="divider my-0"></div>
+              </nav>
+            </section>
+          </aside>
+        </div>
+        <div className="flex w-full flex-col p-4">
+          <div className="w-fit">
+            <label
+              htmlFor="sidebar-mobile-fixed"
+              className="btn-primary btn sm:hidden"
+            >
+              Open Sidebar
+            </label>
           </div>
-          <ul className="flex flex-col py-4">
-            <li>
-              <a
-                href="#"
-                className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800"
-              >
-                <span className="inline-flex items-center justify-center h-12 w-12 text-xl text-gray-400">
-                  <i className="bx bx-home"></i>
-                </span>
-                <span className="text-lg font-medium">Users</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800"
-              >
-                <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
-                  <i className="bx bx-music"></i>
-                </span>
-                <span className="text-lg font-medium">Equipments</span>
-              </a>
-            </li>
-            
-            <li>
-              <a
-                href="#"
-                className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800"
-              >
-                <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
-                  <i className="bx bx-log-out"></i>
-                </span>
-                <button onClick={()=> signOut()}>Sign Out</button>
-              </a>
-            </li>
-          </ul>
         </div>
       </div>
     );
   }
 
-  return (
-    <>
-      Not Signed
-      <button onClick={() => signIn()}>Sign In</button>
-    </>
-  );
-}
+  return null;
+};
 
-export default function NavMenu() {
-  return (
-    <div>
-      <SideNav />
-    </div>
-  );
-}
+export default NavMenu;
